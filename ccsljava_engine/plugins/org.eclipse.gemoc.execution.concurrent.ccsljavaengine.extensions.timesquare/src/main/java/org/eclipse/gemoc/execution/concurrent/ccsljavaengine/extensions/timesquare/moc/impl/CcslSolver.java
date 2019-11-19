@@ -613,16 +613,27 @@ public class CcslSolver implements org.eclipse.gemoc.execution.concurrent.ccslja
 		 for(Resource r: _MSEModel.eResource().getResourceSet().getResources()) {
 				if(r.getContents().get(0).getClass() == clazz){
 					_MSEModel.eResource().getResourceSet().getResources().remove(r);
-					doChangeExecModel(execModelResource);
+					doChangeExecModel(_MSEModel.eResource().getResourceSet(), execModelResource);
+					break;
+				}
+		 }
+		 
+		 for(Resource r: _feedbackModel.eResource().getResourceSet().getResources()) {
+				if(r.getContents().get(0).getClass() == clazz){
+					_feedbackModel.eResource().getResourceSet().getResources().remove(r);
+					doChangeExecModel(_feedbackModel.eResource().getResourceSet(), execModelResource);
 					return;
 				}
 		 }
-		 doChangeExecModel(execModelResource);
+		 
+		 doChangeExecModel(_MSEModel.eResource().getResourceSet(), execModelResource);
+		 doChangeExecModel(_feedbackModel.eResource().getResourceSet(), execModelResource);
 		 return;
 	}
 
-	private void doChangeExecModel(Resource execModelResource) {
+	private void doChangeExecModel(ResourceSet resSet, Resource execModelResource) {
 		final Resource r = execModelResource;
+		final ResourceSet rs = resSet;
 		TransactionalEditingDomain editingDomain = org.eclipse.emf.transaction.TransactionalEditingDomain.Factory.INSTANCE.getEditingDomain(_MSEModel.eResource().getResourceSet());
 		final CommandStack commandStack = editingDomain.getCommandStack();
 		commandStack.execute(new RecordingCommand(editingDomain) {
@@ -630,10 +641,12 @@ public class CcslSolver implements org.eclipse.gemoc.execution.concurrent.ccslja
 			@Override
 			protected void doExecute() {
 				//Save DiagramDialog at proper position
-				_MSEModel.eResource().getResourceSet().getResources().add(r);
+				rs.getResources().add(r);
 			}
 		});
 	}
+	
+	
 
 
 	

@@ -399,27 +399,20 @@ public class ConcurrentExecutionEngine extends AbstractExecutionEngine<IConcurre
 			throw new IllegalArgumentException(
 					"executionContext must be an IConcurrentExecutionContext when used in ConcurrentExecutionEngine");
 
+
 		IConcurrentExecutionContext concurrentExecutionContext = getConcurrentExecutionContext();
-		_solver.setExecutableModelResource(concurrentExecutionContext.getResourceModel());
-//		already done in the launch place ?!
-//		ISolver solver;
-//		// TODO very ugly
-//		try {
-//			solver = concurrentExecutionContext.getConcurrentLanguageDefinitionExtension().instanciateSolver();
-//		} catch (CoreException e) {
-//			throw new RuntimeException(e.getMessage());
-//		}
-//		solver.initialize(concurrentExecutionContext);
-//		this.setSolver(solver);
-		this.changeLogicalStepDecider(concurrentExecutionContext.getLogicalStepDecider());
 
 		_mseStateController = new DefaultMSEStateController();
 		concurrentExecutionContext.getExecutionPlatform().getMSEStateControllers().add(_mseStateController);
-
-		executeInitializeModelMethod(executionContext);
-		
 		((ConcurrentModelExecutionContext)executionContext).setUpMSEModel();
 		((ConcurrentModelExecutionContext)executionContext).setUpFeedbackModel();
+		
+		_solver.setExecutableModelResource(concurrentExecutionContext.getResourceModel());
+
+		this.changeLogicalStepDecider(concurrentExecutionContext.getLogicalStepDecider());
+		executeInitializeModelMethod(executionContext);
+		
+
 		
 		Activator.getDefault().debug("*** Engine initialization done. ***");
 	}
